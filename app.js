@@ -1,9 +1,10 @@
 import "dotenv/config";
-
+import cors from "cors";
 import express from "express";
 import authRouter from "./routes/auth.js";
-import messagesRouter from "./routes/messages.js";
+// import messagesRouter from "./routes/messages.js";
 import connectToMongo from "./models/index.js";
+import cookieParser from "cookie-parser"
 
 if (!process.env.PORT) {
   console.log("please provide PORT number and try again");
@@ -17,9 +18,17 @@ if (!process.env.SECRET) {
 connectToMongo().then((connection) => {
   const app = express();
   app.use(express.json());
-
+  app.use(
+    cors({
+      origin: ["http://localhost:3000"],
+      methods: ["GET", "POST"],
+      credentials: true,
+    })
+  );
+  app.use(cookieParser());
+  
   app.use("/auth", authRouter);
-  app.use("/messages", messagesRouter);
+//   app.use("/messages", messagesRouter);
 
   app.listen(process.env.PORT, () =>
     console.log("listening on " + process.env.PORT)
